@@ -14,17 +14,6 @@ var AnimationEngine = (function () {
         this.crc.stroke();
         x += 1;
     };
-    AnimationEngine.prototype.update = function () {
-        this.clearCanvas();
-        this.drawBackground();
-    };
-    AnimationEngine.prototype.clearCanvas = function () {
-        this.crc.clearRect(0, 0, 1280, 720);
-    };
-    AnimationEngine.prototype.drawBackground = function () {
-        this.crc.fillStyle = "black";
-        this.crc.fillRect(0, 0, 1280, 720);
-    };
     return AnimationEngine;
 }());
 var EventHandler = (function () {

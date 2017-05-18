@@ -23,18 +23,4 @@ class AnimationEngine{
 
         x += 1;
     }
-
-        update()
-    {
-        this.clearCanvas();
-        this.drawBackground();
-    }
-
-    clearCanvas() {
-        this.crc.clearRect(0,0,1280,720);
-    }
-        drawBackground() {
-        this.crc.fillStyle = "black";
-        this.crc.fillRect(0,0,1280,720); 
-    }
 }
