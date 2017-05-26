@@ -11,10 +11,9 @@ class InputHandler {
 
     handleKeyPress(char:string){
 
-        let player =  this.game.getPlayer();
+        let player = this.game.getPlayer();
         let x = this.game.getPlayer().getX();
         let y = this.game.getPlayer().getY();
-        this.game.getRenderEngine().getCrc().clearRect(x, y,x+72,y+96)
 
         switch(char)
         {
@@ -22,21 +21,46 @@ class InputHandler {
             *CODE*
             break;*/
 
-            case "W":
+           /*case "W":
                 player.setLocation(player.getX(),player.getY()-player.getSpeed());
-            break;
+            break;*/
             case "A":
-                player.setLocation(player.getX()-player.getSpeed(),player.getY());
+                if (!player.getIsMoving()) {
+                player.setDirection(0);
+                player.setIsMoving(true);
+                } else {
+                    player.setDirection(0);
+                }
             break;
-            case "S":
+            /*case "S":
                 player.setLocation(player.getX(),player.getY()+player.getSpeed());
-            break;
+            break;*/
             case "D":
-                player.setLocation(player.getX()+player.getSpeed(),player.getY());
+                if (!player.getIsMoving()) {
+                player.setDirection(1);
+                player.setIsMoving(true);
+                } else {
+                    player.setDirection(1);
+                }
             break;
-
-            
         }
-            this.game.getRenderEngine().drawRimmert();
+            
     }
+
+    handleKeyRelease(char:string){
+
+        let player = this.game.getPlayer();
+        let x = this.game.getPlayer().getX();
+        let y = this.game.getPlayer().getY();
+
+        switch(char)
+        {
+            case "A":
+            case "D":
+                player.setIsMoving(false);
+            break;
+        }
+            
+    }
+
 }
