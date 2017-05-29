@@ -1,6 +1,3 @@
-/*
-* @Author Mitch
-*/
 class RenderEngine {
 
     constructor(game:Game, gameCanvas:HTMLCanvasElement)
@@ -12,50 +9,64 @@ class RenderEngine {
 
     private gameCanvas:HTMLCanvasElement;
     private crc:CanvasRenderingContext2D;
-    private running:boolean = false;
     private game:Game;
-
-
-    startRendering() {
-        this.running = true;
-        this.renderLoop();
-    }
-
-    stopRendering() {
-        this.running = false;
-    }
-
-    renderLoop() : void {
-        if (this.running == false)
-            return;
-        
-        this.drawBackground();
-        this.drawRimmert();
-        //this.drawAnimation();
-        
-        this.renderLoop(); 
-    }
+    private playerSprite = new Sprite("rimmert.svg");
+    /*private x:number;
+    private y:number;
+    private numberofobjects:number;
+    private speed:number=3;
+    private sprite:Sprite;*/
 
     drawBackground() {
-        this.crc.fillStyle = "black";
+        this.crc.fillStyle = "skyblue";
         this.crc.fillRect(0,0,1280,720); 
     }
 
-    /*drawAnimation() {
-        let x = 200;
-        requestAnimationFrame(this.drawAnimation);
-        this.crc.beginPath();
-        this.crc.arc(x, 200, 30, 0, Math.PI * 2, false);
-        this.crc.strokeStyle = 'blue';
-        this.crc.stroke();
-
-        x += 1;
-    }*/
-
-    drawRimmert() {
-        let img = <HTMLImageElement>document.getElementById("testimg");
-        this.crc.drawImage(img,this.game.getPlayer().getX(), this.game.getPlayer().getY());
+    drawSprite(s:Sprite, x:number, y:number) {
+        let img = this.playerSprite.get();
+        this.crc.drawImage(img, x, y);
     }
+
+    /*drawAsteroids() {
+        // Draw asteroids.
+        for (let i = 0; i <= 20; i++) {
+            // Get random positions for asteroids.
+             var a = Math.floor(Math.random() * 1280);
+             var b = Math.floor(Math.random() * 720);
+
+          // Make the asteroids red
+          this.crc.fillStyle = "red";
+
+          // Keep the asteroids far enough away from
+          // the beginning or end.
+          if (a > 40 && b > 40 && a < 1280 && b < 1280) {
+
+            // Draw an individual asteroid.
+            this.crc.beginPath();
+            this.crc.arc(a, b, 10, 0, Math.PI * 2, true);
+            this.crc.closePath();
+            this.crc.fill();
+          } else--i;
+        }
+    }
+
+
+    getSpeed()
+    {
+        return this.speed;
+    }
+
+    setSpeed(s:number) {
+        this.speed = s;
+    }
+
+    getX() {
+        return this.x;
+    }
+
+    getY() {
+        return this.y;
+    }*/
 
     getCrc() {
         return this.crc;
@@ -65,6 +76,8 @@ class RenderEngine {
     {
         this.clearCanvas();
         this.drawBackground();
+        this.game.getRenderEngine().drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
+        this.game.getFallingObject().drawAsteroids();
     }
 
     clearCanvas() {

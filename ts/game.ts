@@ -2,12 +2,13 @@ class Game {
 
     constructor() {
         //player
-        this.player = new Player();
+        this.player = new Player(this);
         //handlers
         this.eventHandler = new EventHandler(this);
         this.inputHandler = new InputHandler(this);
         //rendering
         let canvas:HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('cnvs');
+        //this.getFallingObject = new FallingObject(this, canvas);
         this.renderEngine = new RenderEngine(this, canvas);
     }
     
@@ -15,17 +16,17 @@ class Game {
     private inputHandler:InputHandler;
     private eventHandler:EventHandler;
     private player:Player;
-    private animationEngine:AnimationEngine;
+    private fallingObject:FallingObject;
 
     getPlayer() : Player {
         return this.player;
     }
+
+    getFallingObject() : FallingObject {
+        return this.fallingObject;
+    }
     
     getRenderEngine() : RenderEngine {
         return this.renderEngine;
-    }
-
-    getAnimationEngine() : AnimationEngine {
-        return this.animationEngine;
     }
 }
