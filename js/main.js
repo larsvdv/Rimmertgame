@@ -7,16 +7,13 @@ var EventHandler = (function () {
             if (event.type == "keyup")
                 _this.getInputHandler().handleKeyRelease(String.fromCharCode(event.keyCode));
         };
-        this.keyboardRelease = function (event) {
-            _this.getInputHandler().handleKeyRelease(String.fromCharCode(event.keyCode));
-        };
         this.addEventHandlers();
         this.game = game;
         this.inputHandler = new InputHandler(game);
     }
     EventHandler.prototype.addEventHandlers = function () {
         document.addEventListener('keydown', this.keyboardInput);
-        document.addEventListener('keyup', this.keyboardRelease);
+        document.addEventListener('keyup', this.keyboardInput);
     };
     EventHandler.prototype.getInputHandler = function () {
         return this.inputHandler;
@@ -34,7 +31,7 @@ var FallingObject = (function () {
         for (var i = 0; i <= 20; i++) {
             var a = Math.floor(Math.random() * 299);
             var b = Math.floor(Math.random() * 299);
-            this.crc.fillStyle = "red";
+            this.crc.fillStyle = "#FF0000";
             if (a > 40 && b > 40 && a < 270 && b < 270) {
                 this.crc.beginPath();
                 this.crc.arc(a, b, 10, 0, Math.PI * 2, true);
@@ -70,8 +67,8 @@ var Game = (function () {
     Game.prototype.getPlayer = function () {
         return this.player;
     };
-    Game.prototype.getFallingObject = function () {
-        return this.fallingObject;
+    Game.prototype.drawAsteroids = function () {
+        return this.fallingobject;
     };
     Game.prototype.getRenderEngine = function () {
         return this.renderEngine;
@@ -153,6 +150,7 @@ var Player = (function () {
     };
     Player.prototype.setIsMoving = function (b) {
         this.isMoving = b;
+        console.log("Moving set to: " + b);
         this.movementLoop();
     };
     Player.prototype.movementLoop = function () {
@@ -176,8 +174,17 @@ var RenderEngine = (function () {
         this.crc = this.gameCanvas.getContext("2d");
     }
     RenderEngine.prototype.drawBackground = function () {
-        this.crc.fillStyle = "skyblue";
+        this.crc.fillStyle = "black";
         this.crc.fillRect(0, 0, 1280, 720);
+    };
+    RenderEngine.prototype.drawAnimation = function () {
+        var x = 200;
+        requestAnimationFrame(this.drawAnimation);
+        this.crc.beginPath();
+        this.crc.arc(x, 200, 30, 0, Math.PI * 2, false);
+        this.crc.strokeStyle = 'blue';
+        this.crc.stroke();
+        x += 1;
     };
     RenderEngine.prototype.drawSprite = function (s, x, y) {
         var img = this.playerSprite.get();
@@ -190,7 +197,6 @@ var RenderEngine = (function () {
         this.clearCanvas();
         this.drawBackground();
         this.game.getRenderEngine().drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
-        this.game.getFallingObject().drawAsteroids();
     };
     RenderEngine.prototype.clearCanvas = function () {
         this.crc.clearRect(0, 0, 1280, 720);
