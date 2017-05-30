@@ -14,7 +14,7 @@ class EventHandler {
     
         addEventHandlers() {
             document.addEventListener('keydown', this.keyboardInput);
-            document.addEventListener('keyup', this.keyboardInput);
+            document.addEventListener('keyup', this.keyboardRelease);
         }
 
         keyboardInput = (event: KeyboardEvent):void => {
@@ -22,6 +22,10 @@ class EventHandler {
                 this.getInputHandler().handleKeyPress(String.fromCharCode(event.keyCode));
 
                 if (event.type == "keyup")
+                this.getInputHandler().handleKeyRelease(String.fromCharCode(event.keyCode));
+        }
+
+        keyboardRelease = (event: KeyboardEvent):void => {
                 this.getInputHandler().handleKeyRelease(String.fromCharCode(event.keyCode));
         }
 

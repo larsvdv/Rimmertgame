@@ -43,7 +43,6 @@ class Player {
 
     setIsMoving(b:boolean) {
         this.isMoving = b;
-        console.log("Moving set to: "+b);
             this.movementLoop();
     }
 
@@ -57,7 +56,6 @@ class Player {
         if (this.direction == 1)
             this.setLocation(this.getX()+this.getSpeed(), this.getY());
         
-        this.game.getRenderEngine().update();
         setTimeout(()=>{this.movementLoop()}, 0);
     }
 
