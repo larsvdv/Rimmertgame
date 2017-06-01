@@ -8,7 +8,7 @@ class FallingObject{
 
     constructor(game:Game) {
         this.x = Math.random() * 1280;
-        this.y = 0;
+        this.y = -120;
         this.game = game;
     }
 

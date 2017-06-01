@@ -1,3 +1,33 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Collision = (function () {
+    function Collision() {
+    }
+    return Collision;
+}());
+var COLLIDER;
+(function (COLLIDER) {
+    COLLIDER[COLLIDER["CIRCLE"] = 0] = "CIRCLE";
+    COLLIDER[COLLIDER["RECTANGLE"] = 1] = "RECTANGLE";
+    COLLIDER[COLLIDER["ROTRECTANGLE"] = 2] = "ROTRECTANGLE";
+    COLLIDER[COLLIDER["LINE"] = 3] = "LINE";
+    COLLIDER[COLLIDER["POLYGON"] = 4] = "POLYGON";
+})(COLLIDER || (COLLIDER = {}));
+var Enemy = (function (_super) {
+    __extends(Enemy, _super);
+    function Enemy() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Enemy;
+}(FallingObject));
 var EventHandler = (function () {
     function EventHandler(game) {
         var _this = this;
@@ -27,7 +57,7 @@ var FallingObject = (function () {
     function FallingObject(game) {
         this.speed = 3;
         this.x = Math.random() * 1280;
-        this.y = 0;
+        this.y = -120;
         this.game = game;
     }
     FallingObject.prototype.getSpeed = function () {
@@ -68,7 +98,7 @@ var Game = (function () {
         return this.renderEngine;
     };
     Game.prototype.startGame = function () {
-        for (var i = 0; i <= 0; i++) {
+        for (var i = 0; i <= 9; i++) {
             this.fallingObjects[i] = new FallingObject(this);
         }
         this.moveFallingObjects();

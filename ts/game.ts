@@ -9,7 +9,6 @@ class Game {
         this.fallingObjects = new Array(10);
         //rendering
         let canvas:HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('cnvs');
-        //this.getFallingObject = new FallingObject(this, canvas);
         this.renderEngine = new RenderEngine(this, canvas);
 
         this.startGame();
@@ -34,7 +33,7 @@ class Game {
     }
 
     startGame() {
-        for(let i=0;i<=0;i++){
+        for(let i=0;i<=9;i++){
         this.fallingObjects[i] = new FallingObject(this); 
     }
             this.moveFallingObjects();   

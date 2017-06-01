@@ -1,6 +1,3 @@
-/*
-* @Author Mitch
-*/
 class InputHandler {
     
     constructor(game:Game) {
