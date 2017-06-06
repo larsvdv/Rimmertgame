@@ -64,10 +64,11 @@ var FallingObject = (function () {
 }());
 var Game = (function () {
     function Game() {
+        this.spawnDelay = 1500;
         this.player = new Player(this);
         this.eventHandler = new EventHandler(this);
         this.inputHandler = new InputHandler(this);
-        this.fallingObjects = new Array(8);
+        this.fallingObjects = new Array(0);
         var canvas = document.getElementById('cnvs');
         this.renderEngine = new RenderEngine(this, canvas);
         this.startGame();
@@ -82,17 +83,38 @@ var Game = (function () {
         return this.renderEngine;
     };
     Game.prototype.startGame = function () {
-        for (var i = 0; i <= 12; i++) {
-            this.fallingObjects[i] = new FallingObject(this);
-        }
+        this.spawnObjects();
         this.moveFallingObjects();
+    };
+    Game.prototype.spawnObjects = function () {
+        var _this = this;
+        this.fallingObjects.push(this.spawnRandomObject());
+        setTimeout(function () { _this.spawnObjects(); }, this.spawnDelay);
+    };
+    Game.prototype.spawnRandomObject = function () {
+        if ((Math.random()) >= 0.5) {
+            return new FallingObject(this);
+        }
+        else {
+            return new SuperEnemy(this);
+        }
     };
     Game.prototype.moveFallingObjects = function () {
         var _this = this;
         if (this.fallingObjects.length == 0)
             return;
         for (var i = 0; i < this.fallingObjects.length; i++) {
-            this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY() + this.fallingObjects[i].getSpeed());
+            if (this.fallingObjects[i] != null) {
+                this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY() + this.fallingObjects[i].getSpeed());
+                if (this.fallingObjects[i].getY() > 600) {
+                    this.fallingObjects[i] = null;
+                    for (var a = i; a <= this.fallingObjects.length; a++) {
+                        if (this.fallingObjects[a + 1] != null) {
+                            this.fallingObjects[a] = this.fallingObjects[a + 1];
+                        }
+                    }
+                }
+            }
         }
         this.getRenderEngine().update();
         setTimeout(function () { _this.moveFallingObjects(); }, 0);
@@ -229,8 +251,10 @@ var RenderEngine = (function () {
         this.crc.fillText(s, x, y);
     };
     RenderEngine.prototype.drawFallingObjects = function () {
-        for (var i = 0; i < this.game.getFallingObjects().length; i++)
-            this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY());
+        for (var i = 0; i < this.game.getFallingObjects().length; i++) {
+            if (this.game.getFallingObjects()[i] != null)
+                this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY());
+        }
     };
     return RenderEngine;
 }());

@@ -12,7 +12,6 @@ class RenderEngine {
     private game:Game;
     private sprite:Sprite;
     private playerSprite = new Sprite("rimmert.svg");
-    //private spawnTime = Math.random()*3000 + 2000;
 
     drawBackground() {
         this.crc.fillStyle = "skyblue";
@@ -57,18 +56,17 @@ class RenderEngine {
         this.crc.fillText(s, x, y);
     }
 
-    /*spawnEnemy() {
-        this.spawnTime = Math.random()*300 + 200;
-    }*/
 
     /*drawSuperEnemy() {
-        if (this.spawnTime = 200)
-        return;
+
     }*/
 
     drawFallingObjects() {
-        for (let i=0;i<this.game.getFallingObjects().length;i++)
-        this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY())
+        for (let i=0;i<this.game.getFallingObjects().length;i++) {
+            if (this.game.getFallingObjects()[i] != null)
+                this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY())
+        }
     }
+    
 
 }
