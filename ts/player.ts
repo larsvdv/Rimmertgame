@@ -56,6 +56,5 @@ class Player {
         
         setTimeout(()=>{this.movementLoop()}, 0);
     }
-    
 
 }
