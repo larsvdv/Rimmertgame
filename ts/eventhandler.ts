@@ -1,6 +1,3 @@
-/*
-* @Author Mitch
-*/
 class EventHandler {
 
     constructor(game:Game){

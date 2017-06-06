@@ -6,7 +6,7 @@ class Game {
         //handlers
         this.eventHandler = new EventHandler(this);
         this.inputHandler = new InputHandler(this);
-        this.fallingObjects = new Array(10);
+        this.fallingObjects = new Array(0);
         //rendering
         let canvas:HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('cnvs');
         this.renderEngine = new RenderEngine(this, canvas);
@@ -19,6 +19,7 @@ class Game {
     private eventHandler:EventHandler;
     private player:Player;
     private fallingObjects:Array<FallingObject>;
+    private spawnDelay:number = 1500;
 
     getPlayer() : Player {
         return this.player;
@@ -27,17 +28,28 @@ class Game {
     getFallingObjects() : FallingObject[] {
         return this.fallingObjects;
     }
+
     
     getRenderEngine() : RenderEngine {
         return this.renderEngine;
     }
 
     startGame() {
-        for(let i=0;i<=9;i++){
-        this.fallingObjects[i] = new FallingObject(this); 
+            this.spawnObjects();
+            this.moveFallingObjects();
     }
-            this.moveFallingObjects();   
+
+    spawnObjects() {
+        this.fallingObjects.push(this.spawnRandomObject());
+        setTimeout(()=>{this.spawnObjects()}, this.spawnDelay);
     }
+
+    spawnRandomObject(){
+    if ((Math.random()) >= 0.5){
+        return new FallingObject(this);
+    } else {
+        return new SuperEnemy(this);
+    }}
 
     moveFallingObjects() {
 
@@ -45,7 +57,19 @@ class Game {
         return;
 
         for(let i=0;i<this.fallingObjects.length;i++) {
+
+            if(this.fallingObjects[i] != null) {
+
             this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY()+this.fallingObjects[i].getSpeed());
+            if (this.fallingObjects[i].getY() > 600) {
+                this.fallingObjects[i] = null;
+                for (let a = i;a<=this.fallingObjects.length;a++) {
+                    if (this.fallingObjects[a+1] != null) {
+                    this.fallingObjects[a] = this.fallingObjects[a+1];
+                    }
+                }
+            }
+            }
         }
         
         this.getRenderEngine().update();

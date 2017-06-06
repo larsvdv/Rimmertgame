@@ -10,6 +10,7 @@ class RenderEngine {
     private gameCanvas:HTMLCanvasElement;
     private crc:CanvasRenderingContext2D;
     private game:Game;
+    private sprite:Sprite;
     private playerSprite = new Sprite("rimmert.svg");
 
     drawBackground() {
@@ -18,7 +19,7 @@ class RenderEngine {
     }
 
     drawSprite(s:Sprite, x:number, y:number) {
-        let img = this.playerSprite.get();
+        let img = s.get();
         this.crc.drawImage(img, x, y);
     }
 
@@ -26,12 +27,24 @@ class RenderEngine {
         return this.crc;
     }
 
-    update()
-    {
+    collide() {
+        const player = this.game.getPlayer();
+
+        if(player.getX() <= 0 ){
+            player.setLocation(0);
+        }
+
+        if(player.getX() >= 1220 ){
+            player.setLocation(1220);
+        }
+    }
+
+    update() {
         this.clearCanvas();
         this.drawBackground();
-        this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
         this.drawFallingObjects();
+        this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
+        this.collide();
     }
 
     clearCanvas() {
@@ -43,9 +56,17 @@ class RenderEngine {
         this.crc.fillText(s, x, y);
     }
 
+
+    /*drawSuperEnemy() {
+
+    }*/
+
     drawFallingObjects() {
-        for (let i=0;i<this.game.getFallingObjects().length;i++)
-        this.drawSprite(new Sprite("rimmert.svg"), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY())
+        for (let i=0;i<this.game.getFallingObjects().length;i++) {
+            if (this.game.getFallingObjects()[i] != null)
+                this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY())
+        }
     }
+    
 
 }

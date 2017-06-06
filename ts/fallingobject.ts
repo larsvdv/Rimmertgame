@@ -2,8 +2,8 @@ class FallingObject{
     
     private x:number;
     private y:number;
-    private speed:number=3;
-    private sprite:Sprite;
+    protected speed:number=3;
+    protected sprite:Sprite = new Sprite('apple.svg');
     private game:Game;
 
     constructor(game:Game) {
@@ -13,8 +13,7 @@ class FallingObject{
     }
 
     
-    getSpeed()
-    {
+    getSpeed() {
         return this.speed;
     }
 
@@ -28,6 +27,10 @@ class FallingObject{
 
     getY() {
         return this.y;
+    }
+
+    getSprite() {
+        return this.sprite;
     }
 
     setLocation(x:number, y:number) {
