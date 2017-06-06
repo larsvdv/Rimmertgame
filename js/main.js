@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var EventHandler = (function () {
     function EventHandler(game) {
         var _this = this;
@@ -7,13 +17,16 @@ var EventHandler = (function () {
             if (event.type == "keyup")
                 _this.getInputHandler().handleKeyRelease(String.fromCharCode(event.keyCode));
         };
+        this.keyboardRelease = function (event) {
+            _this.getInputHandler().handleKeyRelease(String.fromCharCode(event.keyCode));
+        };
         this.addEventHandlers();
         this.game = game;
         this.inputHandler = new InputHandler(game);
     }
     EventHandler.prototype.addEventHandlers = function () {
         document.addEventListener('keydown', this.keyboardInput);
-        document.addEventListener('keyup', this.keyboardInput);
+        document.addEventListener('keyup', this.keyboardRelease);
     };
     EventHandler.prototype.getInputHandler = function () {
         return this.inputHandler;
@@ -23,25 +36,11 @@ var EventHandler = (function () {
 var FallingObject = (function () {
     function FallingObject(game) {
         this.speed = 3;
+        this.sprite = new Sprite('apple.svg');
         this.x = Math.random() * 1280;
-        this.y = 0;
+        this.y = -120;
         this.game = game;
     }
-    FallingObject.prototype.drawAsteroids = function () {
-        for (var i = 0; i <= 20; i++) {
-            var a = Math.floor(Math.random() * 299);
-            var b = Math.floor(Math.random() * 299);
-            this.crc.fillStyle = "#FF0000";
-            if (a > 40 && b > 40 && a < 270 && b < 270) {
-                this.crc.beginPath();
-                this.crc.arc(a, b, 10, 0, Math.PI * 2, true);
-                this.crc.closePath();
-                this.crc.fill();
-            }
-            else
-                --i;
-        }
-    };
     FallingObject.prototype.getSpeed = function () {
         return this.speed;
     };
@@ -54,6 +53,13 @@ var FallingObject = (function () {
     FallingObject.prototype.getY = function () {
         return this.y;
     };
+    FallingObject.prototype.getSprite = function () {
+        return this.sprite;
+    };
+    FallingObject.prototype.setLocation = function (x, y) {
+        this.x = x;
+        this.y = y;
+    };
     return FallingObject;
 }());
 var Game = (function () {
@@ -61,17 +67,35 @@ var Game = (function () {
         this.player = new Player(this);
         this.eventHandler = new EventHandler(this);
         this.inputHandler = new InputHandler(this);
+        this.fallingObjects = new Array(8);
         var canvas = document.getElementById('cnvs');
         this.renderEngine = new RenderEngine(this, canvas);
+        this.startGame();
     }
     Game.prototype.getPlayer = function () {
         return this.player;
     };
-    Game.prototype.drawAsteroids = function () {
-        return this.fallingobject;
+    Game.prototype.getFallingObjects = function () {
+        return this.fallingObjects;
     };
     Game.prototype.getRenderEngine = function () {
         return this.renderEngine;
+    };
+    Game.prototype.startGame = function () {
+        for (var i = 0; i <= 12; i++) {
+            this.fallingObjects[i] = new FallingObject(this);
+        }
+        this.moveFallingObjects();
+    };
+    Game.prototype.moveFallingObjects = function () {
+        var _this = this;
+        if (this.fallingObjects.length == 0)
+            return;
+        for (var i = 0; i < this.fallingObjects.length; i++) {
+            this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY() + this.fallingObjects[i].getSpeed());
+        }
+        this.getRenderEngine().update();
+        setTimeout(function () { _this.moveFallingObjects(); }, 0);
     };
     return Game;
 }());
@@ -132,9 +156,8 @@ var Player = (function () {
     Player.prototype.getY = function () {
         return this.y;
     };
-    Player.prototype.setLocation = function (x, y) {
+    Player.prototype.setLocation = function (x) {
         this.x = x;
-        this.y = y;
     };
     Player.prototype.getSpeed = function () {
         return 10;
@@ -150,7 +173,6 @@ var Player = (function () {
     };
     Player.prototype.setIsMoving = function (b) {
         this.isMoving = b;
-        console.log("Moving set to: " + b);
         this.movementLoop();
     };
     Player.prototype.movementLoop = function () {
@@ -158,10 +180,9 @@ var Player = (function () {
         if (this.isMoving == false)
             return;
         if (this.direction == 0)
-            this.setLocation(this.getX() - this.getSpeed(), this.getY());
+            this.setLocation(this.getX() - this.getSpeed());
         if (this.direction == 1)
-            this.setLocation(this.getX() + this.getSpeed(), this.getY());
-        this.game.getRenderEngine().update();
+            this.setLocation(this.getX() + this.getSpeed());
         setTimeout(function () { _this.movementLoop(); }, 0);
     };
     return Player;
@@ -174,29 +195,31 @@ var RenderEngine = (function () {
         this.crc = this.gameCanvas.getContext("2d");
     }
     RenderEngine.prototype.drawBackground = function () {
-        this.crc.fillStyle = "black";
+        this.crc.fillStyle = "skyblue";
         this.crc.fillRect(0, 0, 1280, 720);
     };
-    RenderEngine.prototype.drawAnimation = function () {
-        var x = 200;
-        requestAnimationFrame(this.drawAnimation);
-        this.crc.beginPath();
-        this.crc.arc(x, 200, 30, 0, Math.PI * 2, false);
-        this.crc.strokeStyle = 'blue';
-        this.crc.stroke();
-        x += 1;
-    };
     RenderEngine.prototype.drawSprite = function (s, x, y) {
-        var img = this.playerSprite.get();
+        var img = s.get();
         this.crc.drawImage(img, x, y);
     };
     RenderEngine.prototype.getCrc = function () {
         return this.crc;
     };
+    RenderEngine.prototype.collide = function () {
+        var player = this.game.getPlayer();
+        if (player.getX() <= 0) {
+            player.setLocation(0);
+        }
+        if (player.getX() >= 1220) {
+            player.setLocation(1220);
+        }
+    };
     RenderEngine.prototype.update = function () {
         this.clearCanvas();
         this.drawBackground();
-        this.game.getRenderEngine().drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
+        this.drawFallingObjects();
+        this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
+        this.collide();
     };
     RenderEngine.prototype.clearCanvas = function () {
         this.crc.clearRect(0, 0, 1280, 720);
@@ -204,6 +227,10 @@ var RenderEngine = (function () {
     RenderEngine.prototype.drawText = function (s, x, y) {
         this.crc.fillStyle = "white";
         this.crc.fillText(s, x, y);
+    };
+    RenderEngine.prototype.drawFallingObjects = function () {
+        for (var i = 0; i < this.game.getFallingObjects().length; i++)
+            this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY());
     };
     return RenderEngine;
 }());
@@ -220,4 +247,14 @@ var Sprite = (function () {
     };
     return Sprite;
 }());
+var SuperEnemy = (function (_super) {
+    __extends(SuperEnemy, _super);
+    function SuperEnemy() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.speed = 4;
+        _this.sprite = new Sprite('windows.svg');
+        return _this;
+    }
+    return SuperEnemy;
+}(FallingObject));
 //# sourceMappingURL=main.js.map

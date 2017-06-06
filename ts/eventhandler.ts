@@ -1,5 +1,5 @@
 /*
-* @Author Lars
+* @Author Mitch
 */
 class EventHandler {
 

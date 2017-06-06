@@ -6,7 +6,6 @@ class Player {
     }
 
     private game:Game;
-
     private x : number = 600;
     private y : number = 600;
     private direction : number = -1;
@@ -20,9 +19,8 @@ class Player {
         return this.y;
     }
 
-    setLocation(x:number, y:number) {
+    setLocation(x:number) {
         this.x = x;
-        this.y = y;
     }
 
     getSpeed() {
@@ -52,11 +50,10 @@ class Player {
         return;
 
         if (this.direction == 0)
-            this.setLocation(this.getX()-this.getSpeed(), this.getY());
+            this.setLocation(this.getX()-this.getSpeed());
         if (this.direction == 1)
-            this.setLocation(this.getX()+this.getSpeed(), this.getY());
+            this.setLocation(this.getX()+this.getSpeed());
         
-        this.game.getRenderEngine().update();
         setTimeout(()=>{this.movementLoop()}, 0);
     }
 
