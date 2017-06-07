@@ -10,6 +10,7 @@ class Player {
     private y : number = 600;
     private direction : number = -1;
     private isMoving : boolean = false;
+    private score : 0;
 
     getX() : number {
         return this.x;

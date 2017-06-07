@@ -19,7 +19,26 @@ class Game {
     private eventHandler:EventHandler;
     private player:Player;
     private fallingObjects:Array<FallingObject>;
-    private spawnDelay:number = 1500;
+    private fallingObject:FallingObject;
+    private spawnDelay:number;
+    private score:number = 0;
+    public collides(x1:number,y1:number,w1:number,h1:number,x2:number,y2:number,w2:number,h2:number) : boolean {
+        
+        let left1=x1;
+        let right1=x1+w1;
+        let top1=y1;
+        let bottom1=y1+h1;
+
+        let left2=x2;
+        let right2=x2+w2;
+        let top2=y2;
+        let bottom2=y2+h2;
+
+        return !(left2 > right1 ||
+        right2 < left1 ||
+        top2 > bottom1 ||
+        bottom2 < top1);
+    }
 
     getPlayer() : Player {
         return this.player;
@@ -34,18 +53,24 @@ class Game {
         return this.renderEngine;
     }
 
-    startGame() {
-            this.spawnObjects();
-            this.moveFallingObjects();
+    getScore() {
+        return this.score;
     }
 
+    startGame() {
+        this.spawnObjects();
+        this.moveFallingObjects();
+    }
+
+    //an object spawns between 200 and 1500 ms
     spawnObjects() {
         this.fallingObjects.push(this.spawnRandomObject());
-        setTimeout(()=>{this.spawnObjects()}, this.spawnDelay);
+        setTimeout(()=>{this.spawnObjects()}, this.spawnDelay = 200 + (Math.random() * 1500));
     }
 
+    //spawntimer for objects
     spawnRandomObject(){
-    if ((Math.random()) >= 0.5){
+    if ((Math.random()) >= 0.7){
         return new FallingObject(this);
     } else {
         return new SuperEnemy(this);
@@ -59,9 +84,27 @@ class Game {
         for(let i=0;i<this.fallingObjects.length;i++) {
 
             if(this.fallingObjects[i] != null) {
-
             this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY()+this.fallingObjects[i].getSpeed());
-            if (this.fallingObjects[i].getY() > 600) {
+
+            if (this.collides(this.getPlayer().getX(), this.getPlayer().getY(), 76, 92, this.fallingObjects[i].getX(), this.fallingObjects[i].getY(), 69, 69)){
+                if (this.fallingObjects[i] instanceof SuperEnemy) {
+                    return this.renderEngine.endGame();
+                }
+                if (!(this.fallingObjects[i]  instanceof SuperEnemy)) {
+                    this.score++;
+                }
+
+                this.fallingObjects[i] = null;
+
+                for (let a = i;a<=this.fallingObjects.length;a++) {
+                    if (this.fallingObjects[a+1] != null) {
+                        this.fallingObjects[a] = this.fallingObjects[a+1];
+                    }
+                }
+            }
+        
+            //destroys the object on Y 900
+            else if (this.fallingObjects[i].getY() > 900) {
                 this.fallingObjects[i] = null;
                 for (let a = i;a<=this.fallingObjects.length;a++) {
                     if (this.fallingObjects[a+1] != null) {
@@ -69,9 +112,8 @@ class Game {
                     }
                 }
             }
-            }
         }
-        
+        }
         this.getRenderEngine().update();
         setTimeout(()=>{this.moveFallingObjects()}, 0);
     }

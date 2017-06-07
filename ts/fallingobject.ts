@@ -37,4 +37,5 @@ class FallingObject{
         this.x = x;
         this.y = y;
     }
+
 }
