@@ -286,9 +286,9 @@ var RenderEngine = (function () {
         this.crc.fillText("GAMEOVER!!", 450, 400);
     };
     RenderEngine.prototype.drawScore = function () {
-        this.crc.font = "24px Comic Sans MS";
+        this.crc.font = "32px Comic Sans MS";
         this.crc.fillStyle = "red";
-        this.crc.fillText("Score: " + this.game.getScore(), 1160, 40);
+        this.crc.fillText("Score: " + this.game.getScore(), 1100, 40);
     };
     RenderEngine.prototype.drawText = function (s, x, y) {
         this.crc.fillStyle = "white";

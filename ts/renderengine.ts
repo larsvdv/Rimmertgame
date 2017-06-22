@@ -64,9 +64,9 @@ class RenderEngine {
     }
     
     drawScore() {
-        this.crc.font = "24px Comic Sans MS";
+        this.crc.font = "32px Comic Sans MS";
         this.crc.fillStyle = "red";
-        this.crc.fillText("Score: "+this.game.getScore(), 1160, 40);
+        this.crc.fillText("Score: "+this.game.getScore(), 1100, 40);
     }
 
     //For drawing text on the canvas
