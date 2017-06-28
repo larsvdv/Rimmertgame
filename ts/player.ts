@@ -1,16 +1,16 @@
 class Player {
 
-    constructor(game:Game){
-       this.game = game;
-       this.movementLoop();
-    }
-
     private game:Game;
     private x : number = 600;
     private y : number = 600;
     private direction : number = -1;
     private isMoving : boolean = false;
     private score : 0;
+
+    constructor(game:Game){
+       this.game = game;
+       this.movementLoop();
+    }
 
     getX() : number {
         return this.x;

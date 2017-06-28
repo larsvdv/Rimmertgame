@@ -108,6 +108,15 @@ var Game = (function () {
         this.fallingObjects.push(this.spawnRandomObject());
         setTimeout(function () { _this.spawnObjects(); }, this.spawnDelay = 200 + (Math.random() * 1500));
     };
+    Game.prototype.collide = function () {
+        var player = this.getPlayer();
+        if (player.getX() <= 0) {
+            player.setLocation(0);
+        }
+        if (player.getX() >= 1220) {
+            player.setLocation(1220);
+        }
+    };
     Game.prototype.spawnRandomObject = function () {
         if ((Math.random()) >= 0.7) {
             return new FallingObject(this);
@@ -259,22 +268,13 @@ var RenderEngine = (function () {
     RenderEngine.prototype.getCrc = function () {
         return this.crc;
     };
-    RenderEngine.prototype.collide = function () {
-        var player = this.game.getPlayer();
-        if (player.getX() <= 0) {
-            player.setLocation(0);
-        }
-        if (player.getX() >= 1220) {
-            player.setLocation(1220);
-        }
-    };
     RenderEngine.prototype.update = function () {
         this.clearCanvas();
         this.drawBackground();
         this.drawFallingObjects();
         this.drawScore();
         this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
-        this.collide();
+        this.game.collide();
     };
     RenderEngine.prototype.clearCanvas = function () {
         this.crc.clearRect(0, 0, 1280, 720);
@@ -323,20 +323,6 @@ var SuperEnemy = (function (_super) {
         _this.sprite = new Sprite('windows.svg');
         return _this;
     }
-    SuperEnemy.prototype.collides = function (x1, y1, w1, h1, x2, y2, w2, h2) {
-        var left1 = x1;
-        var right1 = x1 + w1;
-        var top1 = y1;
-        var bottom1 = y1 + h1;
-        var left2 = x2;
-        var right2 = x2 + w2;
-        var top2 = y2;
-        var bottom2 = y2 + h2;
-        return !(left2 > right1 ||
-            right2 < left1 ||
-            top2 > bottom1 ||
-            bottom2 < top1);
-    };
     return SuperEnemy;
 }(FallingObject));
 //# sourceMappingURL=main.js.map

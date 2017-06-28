@@ -1,19 +1,18 @@
 class InputHandler {
-    
+
+    private game:Game;
+
     constructor(game:Game) {
         this.game = game;
     }
 
-    private game:Game;
-
-    handleKeyPress(char:string){
+    handleKeyPress(char:string) {
 
         let player = this.game.getPlayer();
         let x = this.game.getPlayer().getX();
         let y = this.game.getPlayer().getY();
 
-        switch(char)
-        {
+        switch(char) {
             case "A":
                 if (!player.getIsMoving()) {
                 player.setDirection(0);
@@ -31,8 +30,7 @@ class InputHandler {
                     player.setDirection(1);
                 }
             break;
-        }
-            
+        }          
     }
 
     handleKeyRelease(char:string){

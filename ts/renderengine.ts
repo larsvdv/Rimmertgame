@@ -1,20 +1,17 @@
 class RenderEngine {
 
-    constructor(game:Game, gameCanvas:HTMLCanvasElement)
-    {
+    private gameCanvas:HTMLCanvasElement;
+    private crc:CanvasRenderingContext2D;
+    private game:Game;
+    private playerSprite = new Sprite("rimmert.svg");
+    private backgroundSprite = new Sprite("desktop.svg")
+    private score = 0;
+
+    constructor(game:Game, gameCanvas:HTMLCanvasElement) {
         this.game = game;
         this.gameCanvas = gameCanvas;
         this.crc = this.gameCanvas.getContext("2d");
     }
-
-    private gameCanvas:HTMLCanvasElement;
-    private crc:CanvasRenderingContext2D;
-    private game:Game;
-    private sprite:Sprite;
-    private player:Player;
-    private playerSprite = new Sprite("rimmert.svg");
-    private backgroundSprite = new Sprite("desktop.svg")
-    private score = 0;
 
     drawBackground() {
         this.drawSprite(this.backgroundSprite, 0, 0);
@@ -29,26 +26,14 @@ class RenderEngine {
         return this.crc;
     }
 
-    //Collision with sides of the canvas
-    collide() {
-        const player = this.game.getPlayer();
-
-        if(player.getX() <= 0 ){
-            player.setLocation(0);
-        }
-
-        if(player.getX() >= 1220 ){
-            player.setLocation(1220);
-        }
-    }
-
+    //Updates the game canvas
     update() {
         this.clearCanvas();
         this.drawBackground();
         this.drawFallingObjects();
         this.drawScore();
         this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
-        this.collide();
+        this.game.collide();
     }
 
     clearCanvas() {
@@ -63,6 +48,7 @@ class RenderEngine {
         this.crc.fillText("GAMEOVER!!",450,400);
     }
     
+    //Draws the score in the top right corner
     drawScore() {
         this.crc.font = "24px Comic Sans MS";
         this.crc.fillStyle = "red";
@@ -75,6 +61,7 @@ class RenderEngine {
         this.crc.fillText(s, x, y);
     }
 
+    //Draws the falling objects 
     drawFallingObjects() {
         for (let i=0;i<this.game.getFallingObjects().length;i++) {
             if (this.game.getFallingObjects()[i] != null)
