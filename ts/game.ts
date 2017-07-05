@@ -1,13 +1,4 @@
 class Game { 
-    
-    private renderEngine:RenderEngine;
-    private inputHandler:InputHandler;
-    private eventHandler:EventHandler;
-    private player:Player;
-    private fallingObjects:Array<FallingObject>;
-    private fallingObject:FallingObject;
-    private spawnDelay:number;
-    private score:number = 0;
 
     constructor() {
         //player
@@ -15,15 +6,22 @@ class Game {
         //handlers
         this.eventHandler = new EventHandler(this);
         this.inputHandler = new InputHandler(this);
-        this.fallingObjects = new Array(0);
         //rendering
         let canvas:HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('cnvs');
         this.renderEngine = new RenderEngine(this, canvas);
 
         this.startGame();
     }
+    
+    private renderEngine:RenderEngine;
+    private inputHandler:InputHandler;
+    private eventHandler:EventHandler;
+    private player:Player;
+    private objectCollection:ObjectCollection = new ObjectCollection();
+    private spawnDelay:number=200;
+    private score:number = 0;
 
-    public collides(x1:number,y1:number,w1:number,h1:number,x2:number,y2:number,w2:number,h2:number) : boolean {
+    public collides(x1:number,y1:number,w1:number,h1:number,x2:number,y2:number,w2:number,h2:number) : boolean {    
         let left1=x1;
         let right1=x1+w1;
         let top1=y1;
@@ -40,14 +38,14 @@ class Game {
             bottom2 < top1);
     }
 
+    public getObjectCollection(): ObjectCollection {
+        return this.objectCollection;
+    }
+
     getPlayer() : Player {
         return this.player;
     }
 
-    getFallingObjects() : FallingObject[] {
-        return this.fallingObjects;
-    }
-    
     getRenderEngine() : RenderEngine {
         return this.renderEngine;
     }
@@ -63,68 +61,53 @@ class Game {
 
     //an object spawns between 200 and 1500 ms
     spawnObjects() {
-        this.fallingObjects.push(this.spawnRandomObject());
-        setTimeout(()=>{this.spawnObjects()}, this.spawnDelay = 200 + (Math.random() * 1500));
-    }
-
-    //Collision with sides of the canvas
-    collide() {
-        const player = this.getPlayer();
-
-        if(player.getX() <= 0 ){
-            player.setLocation(0);
-        }
-
-        if(player.getX() >= 1220 ){
-            player.setLocation(1220);
-        }
+        this.objectCollection.add(this.spawnRandomObject());
+        setTimeout(()=>{this.spawnObjects()}, 2000);
     }
 
     //spawntimer for objects
     spawnRandomObject(){
+    console.log(this.getObjectCollection());
     if ((Math.random()) >= 0.7){
         return new FallingObject(this);
     } else {
         return new SuperEnemy(this);
-    }}
+    }
+}
+
+    //Ends the game with a gameover screen
+    endGame() {
+        this.getRenderEngine().clearCanvas();
+        this.getRenderEngine().crc.font = "60px Comic Sans MS";
+        this.getRenderEngine().crc.fillStyle = "black";
+        this.getRenderEngine().crc.fillText("GAMEOVER!!",450,400);
+    }
 
     moveFallingObjects() {
 
-        if (this.fallingObjects.length == 0)
-        return;
+        let col = this.objectCollection.getCollection();
 
-        for(let i=0;i<this.fallingObjects.length;i++) {
 
-            if(this.fallingObjects[i] != null) {
-            this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY()+this.fallingObjects[i].getSpeed());
+        for(let i=0;i<col.length;i++) {
 
-            if (this.collides(this.getPlayer().getX(), this.getPlayer().getY(), 76, 92, this.fallingObjects[i].getX(), this.fallingObjects[i].getY(), 69, 69)){
-                if (this.fallingObjects[i] instanceof SuperEnemy) {
-                    return this.renderEngine.endGame();
+            let object = this.objectCollection.get(i);
+
+            object.setLocation(object.getX(), object.getY()+object.getSpeed());
+
+            if (this.collides(this.getPlayer().getX(), this.getPlayer().getY(), 76, 92, object.getX(), object.getY(), 69, 69)){
+                if (object instanceof SuperEnemy) {
+                    return this.endGame();
                 }
-                if (!(this.fallingObjects[i]  instanceof SuperEnemy)) {
+                if (!(object  instanceof SuperEnemy)) {
                     this.score++;
                 }
 
-                this.fallingObjects[i] = null;
-
-                for (let a = i;a<=this.fallingObjects.length;a++) {
-                    if (this.fallingObjects[a+1] != null) {
-                        this.fallingObjects[a] = this.fallingObjects[a+1];
-                    }
-                }
-            }
-        
-            //destroys the object on Y 900
-            else if (this.fallingObjects[i].getY() > 900) {
-                this.fallingObjects[i] = null;
-                for (let a = i;a<=this.fallingObjects.length;a++) {
-                    if (this.fallingObjects[a+1] != null) {
-                    this.fallingObjects[a] = this.fallingObjects[a+1];
-                    }
-                }
-            }
+                this.objectCollection.remove(i);
         }
+                    //destroys the object on Y 900
+                if (object.getY() > 900) {
+                this.objectCollection.remove(i);
+            }
         }
         this.getRenderEngine().update();
         setTimeout(()=>{this.moveFallingObjects()}, 0);

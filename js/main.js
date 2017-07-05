@@ -64,11 +64,12 @@ var FallingObject = (function () {
 }());
 var Game = (function () {
     function Game() {
+        this.objectCollection = new ObjectCollection();
+        this.spawnDelay = 200;
         this.score = 0;
         this.player = new Player(this);
         this.eventHandler = new EventHandler(this);
         this.inputHandler = new InputHandler(this);
-        this.fallingObjects = new Array(0);
         var canvas = document.getElementById('cnvs');
         this.renderEngine = new RenderEngine(this, canvas);
         this.startGame();
@@ -87,11 +88,11 @@ var Game = (function () {
             top2 > bottom1 ||
             bottom2 < top1);
     };
+    Game.prototype.getObjectCollection = function () {
+        return this.objectCollection;
+    };
     Game.prototype.getPlayer = function () {
         return this.player;
-    };
-    Game.prototype.getFallingObjects = function () {
-        return this.fallingObjects;
     };
     Game.prototype.getRenderEngine = function () {
         return this.renderEngine;
@@ -105,19 +106,11 @@ var Game = (function () {
     };
     Game.prototype.spawnObjects = function () {
         var _this = this;
-        this.fallingObjects.push(this.spawnRandomObject());
-        setTimeout(function () { _this.spawnObjects(); }, this.spawnDelay = 200 + (Math.random() * 1500));
-    };
-    Game.prototype.collide = function () {
-        var player = this.getPlayer();
-        if (player.getX() <= 0) {
-            player.setLocation(0);
-        }
-        if (player.getX() >= 1220) {
-            player.setLocation(1220);
-        }
+        this.objectCollection.add(this.spawnRandomObject());
+        setTimeout(function () { _this.spawnObjects(); }, 2000);
     };
     Game.prototype.spawnRandomObject = function () {
+        console.log(this.getObjectCollection());
         if ((Math.random()) >= 0.7) {
             return new FallingObject(this);
         }
@@ -125,35 +118,29 @@ var Game = (function () {
             return new SuperEnemy(this);
         }
     };
+    Game.prototype.endGame = function () {
+        this.getRenderEngine().clearCanvas();
+        this.getRenderEngine().crc.font = "60px Comic Sans MS";
+        this.getRenderEngine().crc.fillStyle = "black";
+        this.getRenderEngine().crc.fillText("GAMEOVER!!", 450, 400);
+    };
     Game.prototype.moveFallingObjects = function () {
         var _this = this;
-        if (this.fallingObjects.length == 0)
-            return;
-        for (var i = 0; i < this.fallingObjects.length; i++) {
-            if (this.fallingObjects[i] != null) {
-                this.fallingObjects[i].setLocation(this.fallingObjects[i].getX(), this.fallingObjects[i].getY() + this.fallingObjects[i].getSpeed());
-                if (this.collides(this.getPlayer().getX(), this.getPlayer().getY(), 76, 92, this.fallingObjects[i].getX(), this.fallingObjects[i].getY(), 69, 69)) {
-                    if (this.fallingObjects[i] instanceof SuperEnemy) {
-                        return this.renderEngine.endGame();
-                    }
-                    if (!(this.fallingObjects[i] instanceof SuperEnemy)) {
-                        this.score++;
-                    }
-                    this.fallingObjects[i] = null;
-                    for (var a = i; a <= this.fallingObjects.length; a++) {
-                        if (this.fallingObjects[a + 1] != null) {
-                            this.fallingObjects[a] = this.fallingObjects[a + 1];
-                        }
-                    }
+        var col = this.objectCollection.getCollection();
+        for (var i = 0; i < col.length; i++) {
+            var object = this.objectCollection.get(i);
+            object.setLocation(object.getX(), object.getY() + object.getSpeed());
+            if (this.collides(this.getPlayer().getX(), this.getPlayer().getY(), 76, 92, object.getX(), object.getY(), 69, 69)) {
+                if (object instanceof SuperEnemy) {
+                    return this.endGame();
                 }
-                else if (this.fallingObjects[i].getY() > 900) {
-                    this.fallingObjects[i] = null;
-                    for (var a = i; a <= this.fallingObjects.length; a++) {
-                        if (this.fallingObjects[a + 1] != null) {
-                            this.fallingObjects[a] = this.fallingObjects[a + 1];
-                        }
-                    }
+                if (!(object instanceof SuperEnemy)) {
+                    this.score++;
                 }
+                this.objectCollection.remove(i);
+            }
+            if (object.getY() > 900) {
+                this.objectCollection.remove(i);
             }
         }
         this.getRenderEngine().update();
@@ -202,6 +189,24 @@ var InputHandler = (function () {
         }
     };
     return InputHandler;
+}());
+var ObjectCollection = (function () {
+    function ObjectCollection() {
+        this.objects = new Array();
+    }
+    ObjectCollection.prototype.add = function (o) {
+        this.objects.push(o);
+    };
+    ObjectCollection.prototype.remove = function (i) {
+        this.objects.splice(i, 1);
+    };
+    ObjectCollection.prototype.getCollection = function () {
+        return this.objects;
+    };
+    ObjectCollection.prototype.get = function (i) {
+        return this.objects[i];
+    };
+    return ObjectCollection;
 }());
 var Player = (function () {
     function Player(game) {
@@ -274,16 +279,9 @@ var RenderEngine = (function () {
         this.drawFallingObjects();
         this.drawScore();
         this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
-        this.game.collide();
     };
     RenderEngine.prototype.clearCanvas = function () {
         this.crc.clearRect(0, 0, 1280, 720);
-    };
-    RenderEngine.prototype.endGame = function () {
-        this.clearCanvas();
-        this.crc.font = "60px Comic Sans MS";
-        this.crc.fillStyle = "black";
-        this.crc.fillText("GAMEOVER!!", 450, 400);
     };
     RenderEngine.prototype.drawScore = function () {
         this.crc.font = "32px Comic Sans MS";
@@ -295,9 +293,9 @@ var RenderEngine = (function () {
         this.crc.fillText(s, x, y);
     };
     RenderEngine.prototype.drawFallingObjects = function () {
-        for (var i = 0; i < this.game.getFallingObjects().length; i++) {
-            if (this.game.getFallingObjects()[i] != null)
-                this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY());
+        for (var i = 0; i < this.game.getObjectCollection().getCollection().length; i++) {
+            var object = this.game.getObjectCollection().get(i);
+            this.drawSprite(object.getSprite(), object.getX(), object.getY());
         }
     };
     return RenderEngine;

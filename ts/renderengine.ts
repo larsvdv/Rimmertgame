@@ -1,7 +1,7 @@
 class RenderEngine {
 
     private gameCanvas:HTMLCanvasElement;
-    private crc:CanvasRenderingContext2D;
+    public crc:CanvasRenderingContext2D;
     private game:Game;
     private playerSprite = new Sprite("rimmert.svg");
     private backgroundSprite = new Sprite("desktop.svg")
@@ -33,19 +33,10 @@ class RenderEngine {
         this.drawFallingObjects();
         this.drawScore();
         this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
-        this.game.collide();
     }
 
     clearCanvas() {
         this.crc.clearRect(0,0,1280,720);
-    }
-
-    //Ends the game with a gameover screen
-    endGame() {
-        this.clearCanvas();
-        this.crc.font = "60px Comic Sans MS";
-        this.crc.fillStyle = "black";
-        this.crc.fillText("GAMEOVER!!",450,400);
     }
     
     //Draws the score in the top right corner
@@ -63,9 +54,9 @@ class RenderEngine {
 
     //Draws the falling objects 
     drawFallingObjects() {
-        for (let i=0;i<this.game.getFallingObjects().length;i++) {
-            if (this.game.getFallingObjects()[i] != null)
-                this.drawSprite(this.game.getFallingObjects()[i].getSprite(), this.game.getFallingObjects()[i].getX(), this.game.getFallingObjects()[i].getY())
+        for (let i=0;i<this.game.getObjectCollection().getCollection().length;i++) {
+            let object = this.game.getObjectCollection().get(i);
+            this.drawSprite(object.getSprite(), object.getX(), object.getY());
         }
     }
     
