@@ -62,7 +62,7 @@ class Game {
     //an object spawns between 200 and 1500 ms
     spawnObjects() {
         this.objectCollection.add(this.spawnRandomObject());
-        setTimeout(()=>{this.spawnObjects()}, 2000);
+        setTimeout(()=>{this.spawnObjects()}, 1337);
     }
 
     //spawntimer for objects
