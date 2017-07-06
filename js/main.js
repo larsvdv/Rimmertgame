@@ -107,7 +107,7 @@ var Game = (function () {
     Game.prototype.spawnObjects = function () {
         var _this = this;
         this.objectCollection.add(this.spawnRandomObject());
-        setTimeout(function () { _this.spawnObjects(); }, 2000);
+        setTimeout(function () { _this.spawnObjects(); }, 1000 + (Math.random() * 500));
     };
     Game.prototype.spawnRandomObject = function () {
         console.log(this.getObjectCollection());
@@ -144,7 +144,7 @@ var Game = (function () {
             }
         }
         this.getRenderEngine().update();
-        setTimeout(function () { _this.moveFallingObjects(); }, 0);
+        setTimeout(function () { _this.moveFallingObjects(); }, 1000 / 144);
     };
     return Game;
 }());
@@ -246,6 +246,16 @@ var Player = (function () {
         var _this = this;
         if (this.isMoving == false)
             return;
+        if (this.getX() >= 1210) {
+            this.setIsMoving(false);
+            this.setLocation(1209);
+            return;
+        }
+        if (this.getX() <= 0) {
+            this.setIsMoving(false);
+            this.setLocation(1);
+            return;
+        }
         if (this.direction == 0)
             this.setLocation(this.getX() - this.getSpeed());
         if (this.direction == 1)
@@ -278,7 +288,7 @@ var RenderEngine = (function () {
         this.drawBackground();
         this.drawFallingObjects();
         this.drawScore();
-        this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
+        this.drawSprite(this.playerSprite, this.game.getPlayer().getX(), this.game.getPlayer().getY());
     };
     RenderEngine.prototype.clearCanvas = function () {
         this.crc.clearRect(0, 0, 1280, 720);

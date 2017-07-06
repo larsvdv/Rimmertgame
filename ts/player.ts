@@ -50,10 +50,24 @@ class Player {
         if (this.isMoving == false)
         return;
 
+        if (this.getX() >= 1210) {
+            this.setIsMoving(false);
+            this.setLocation(1209);
+            return;
+        }
+        if (this.getX() <= 0) {
+            this.setIsMoving(false);
+            this.setLocation(1);
+            return;
+        }
+           
+           
+
         if (this.direction == 0)
             this.setLocation(this.getX()-this.getSpeed());
         if (this.direction == 1)
             this.setLocation(this.getX()+this.getSpeed());
+
         
         setTimeout(()=>{this.movementLoop()}, 0);
     }

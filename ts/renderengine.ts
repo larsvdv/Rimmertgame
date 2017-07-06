@@ -32,7 +32,7 @@ class RenderEngine {
         this.drawBackground();
         this.drawFallingObjects();
         this.drawScore();
-        this.drawSprite(new Sprite("rimmert.svg"), this.game.getPlayer().getX(), this.game.getPlayer().getY());
+        this.drawSprite(this.playerSprite, this.game.getPlayer().getX(), this.game.getPlayer().getY());
     }
 
     clearCanvas() {
